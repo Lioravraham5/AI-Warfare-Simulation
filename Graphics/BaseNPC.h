@@ -2,10 +2,11 @@
 #include "Types.h"
 #include "Map.h"
 #include "Order.h"
+#include "glut.h"
 
 // BaseNPC.h:
 
-static const int MAX_HEALTH = 100;
+static const double MAX_HEALTH = 100.0;
 
 class BaseNPC
 {
@@ -13,7 +14,7 @@ protected:
 	Position position;
 	TeamID teamID;
 	Map* pMap = nullptr;
-	int health = MAX_HEALTH; // Default health value
+	double health = MAX_HEALTH; // Default health value
 	bool isAlive = true;
 
 
@@ -26,9 +27,12 @@ public:
 	TeamID getTeamID() const { return teamID; }
 	Map* getMap() const { return pMap; }
 	bool getIsAlive() const { return isAlive; }
+	double getHealth() const { return health; }
 	
 	// Setters
 	void setPosition(Position p) { position = p; }
+	void addHealth(double val);
+	void subHealth(double val);
 
 	// Virtual Methods
 	virtual void tick() = 0; // Pure virtual function for BaseNPC behavior each tick

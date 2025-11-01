@@ -3,6 +3,8 @@
 #include "FSM.h"
 #include "AStar.h"
 #include "NodeBFS.h"
+#include "Bullet.h"
+#include "Grenade.h"
 
 // WarriorNPC.h:
 
@@ -44,6 +46,8 @@ public:
 	void handleOrder(Order* pOrder);
 	void draw() const override;
 	void setEnemies(const vector<BaseNPC*>& enemies) { allEnemies = enemies; }
+	const bool (*getVisibilityMap() const)[MAP_SIZE] { return visibilityMap; }
+
 
 private:
 	bool hasLineOfSight(Map* pMap, int row1, int col1, int row2, int col2);

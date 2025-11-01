@@ -114,6 +114,8 @@ void WarriorNPC::tick()
 
 	case IN_HEALING_PROCESS:
 		// ADD: implement in healing process behavior
+		if (health == MAX_HEALTH)
+			fsm.setCurrentState(IDLE);
 		break;
 
 	case DEAD:
@@ -327,7 +329,7 @@ Position WarriorNPC::findBestAttackPosition(const BaseNPC* targetEnemy)
 			if (!hasLineOfSight(pMap, row, col, enemyRow, enemyCol))
 				continue;
 
-			// check if the enemy is in bullet rang frim the given position
+			// check if the enemy is in bullet range from the given position
 			double distanceToEnemy = hypot(enemyRow - row, enemyCol - col);
 			if (distanceToEnemy > BULLET_RANGE)
 				continue;

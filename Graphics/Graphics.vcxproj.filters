@@ -31,6 +31,12 @@
     <Filter Include="Header Files\Models\NPCs">
       <UniqueIdentifier>{af4dfca5-7a94-41a7-b417-f0d860a71310}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Models\Utils">
+      <UniqueIdentifier>{9f72d9e7-3891-4319-a6b2-c95fdd6bf6a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Models\Utils">
+      <UniqueIdentifier>{ce0c2262-6e05-48b8-800e-16a075347c1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -57,17 +63,23 @@
     <ClCompile Include="WarriorNPC.cpp">
       <Filter>Source Files\Models\NPCs</Filter>
     </ClCompile>
-    <ClCompile Include="FSM.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="CommanderNPC.cpp">
+      <Filter>Source Files\Models\NPCs</Filter>
     </ClCompile>
-    <ClCompile Include="NodeAStar.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="MedicNPC.cpp">
+      <Filter>Source Files\Models\NPCs</Filter>
     </ClCompile>
     <ClCompile Include="AStar.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Models\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="FSM.cpp">
+      <Filter>Source Files\Models\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeAStar.cpp">
+      <Filter>Source Files\Models\Utils</Filter>
     </ClCompile>
     <ClCompile Include="NodeBFS.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Models\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,9 +88,6 @@
     </ClInclude>
     <ClInclude Include="Warehouse.h">
       <Filter>Header Files\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="Types.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Header Files\Models</Filter>
@@ -95,17 +104,26 @@
     <ClInclude Include="WarriorNPC.h">
       <Filter>Header Files\Models\NPCs</Filter>
     </ClInclude>
-    <ClInclude Include="FSM.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="CommanderNPC.h">
+      <Filter>Header Files\Models\NPCs</Filter>
     </ClInclude>
-    <ClInclude Include="NodeAStar.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="MedicNPC.h">
+      <Filter>Header Files\Models\NPCs</Filter>
     </ClInclude>
     <ClInclude Include="AStar.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Models\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="FSM.h">
+      <Filter>Header Files\Models\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeAStar.h">
+      <Filter>Header Files\Models\Utils</Filter>
     </ClInclude>
     <ClInclude Include="NodeBFS.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Models\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Header Files\Models\Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
