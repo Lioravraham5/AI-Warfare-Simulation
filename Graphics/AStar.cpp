@@ -6,9 +6,9 @@ AStar::AStar(Map* m)
 	pMap = m;
 }
 
-Node* AStar::findPath(int startRow, int startCol, int targetRow, int targetCol)
+NodeAStar* AStar::findPath(int startRow, int startCol, int targetRow, int targetCol)
 {
-	priority_queue<Node*, std::vector<Node*>, CompareNodes> open;
+	priority_queue<NodeAStar*, std::vector<NodeAStar*>, CompareNodes> open;
 	bool visited[MAP_SIZE][MAP_SIZE] = { false };
 	int bestG[MAP_SIZE][MAP_SIZE];
 
@@ -16,11 +16,11 @@ Node* AStar::findPath(int startRow, int startCol, int targetRow, int targetCol)
 
 	// Start Node:
 	int h = getManhattanDistance(startRow, targetRow, startCol, targetCol);
-	Node* pStart = new Node(startRow, startCol, 0, h, nullptr);
+	NodeAStar* pStart = new NodeAStar(startRow, startCol, 0, h, nullptr);
 	open.push(pStart);
 	bestG[startRow][startCol] = 0;
 
-	Node* pGoalNode = nullptr;
+	NodeAStar* pGoalNode = nullptr;
 
 	// Movement directions: up, down, left, right
 	static int directionRow[4] = { 1, -1, 0, 0 };
@@ -28,7 +28,7 @@ Node* AStar::findPath(int startRow, int startCol, int targetRow, int targetCol)
 
 	while (!open.empty())
 	{
-		Node* pCurrent = open.top();
+		NodeAStar* pCurrent = open.top();
 		open.pop();
 
 		// Skip if already visited
@@ -58,7 +58,7 @@ Node* AStar::findPath(int startRow, int startCol, int targetRow, int targetCol)
 
 			if (newG < bestG[neighborRow][neighborCol]) {
 				bestG[neighborRow][neighborCol] = newG;
-				Node* pNeighbor = new Node(neighborRow, neighborCol, newG, h, pCurrent);
+				NodeAStar* pNeighbor = new NodeAStar(neighborRow, neighborCol, newG, h, pCurrent);
 				open.push(pNeighbor);
 			}
 		}
@@ -66,14 +66,14 @@ Node* AStar::findPath(int startRow, int startCol, int targetRow, int targetCol)
 	return pGoalNode; // May be nullptr if no path found
 }
 
-Node* AStar::getNextStepTowardsTarget(Node* pGoalNode, int startRow, int startCol)
+NodeAStar* AStar::getNextStepTowardsTarget(NodeAStar* pGoalNode, int startRow, int startCol)
 {
-	Node* pCurrent = pGoalNode;
+	NodeAStar* pCurrent = pGoalNode;
 
 	// Go back to the start node to find the next step
 	while (pCurrent->getParent() != nullptr)
 	{
-		Node* pParent = pCurrent->getParent();
+		NodeAStar* pParent = pCurrent->getParent();
 		if(pParent->getRow() == startRow && pParent->getCol() == startCol)
 			return pCurrent; // pCurrent is the next step towards the target
 	}
@@ -87,7 +87,7 @@ void AStar::initBestG(int bestG[MAP_SIZE][MAP_SIZE])
 			bestG[i][j] = INT_MAX;
 }
 
-int AStar::getManhattanDistance(int startRow, int targetRow, int startCol, int targetCol)
+int AStar::getManhattanDistance(int startRow, int startCol, int targetRow, int targetCol)
 {
 	return abs(startRow - targetRow) + abs(startCol - targetCol);
 }

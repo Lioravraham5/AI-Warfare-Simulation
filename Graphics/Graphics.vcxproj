@@ -125,7 +125,8 @@
     <ClCompile Include="Grenade.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
-    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="NodeAStar.cpp" />
+    <ClCompile Include="NodeBFS.cpp" />
     <ClCompile Include="Order.cpp" />
     <ClCompile Include="Warehouse.cpp" />
     <ClCompile Include="WarriorNPC.cpp" />
@@ -137,7 +138,8 @@
     <ClInclude Include="FSM.h" />
     <ClInclude Include="Grenade.h" />
     <ClInclude Include="Map.h" />
-    <ClInclude Include="Node.h" />
+    <ClInclude Include="NodeAStar.h" />
+    <ClInclude Include="NodeBFS.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Warehouse.h" />

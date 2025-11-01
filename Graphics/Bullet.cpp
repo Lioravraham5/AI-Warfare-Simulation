@@ -41,6 +41,13 @@ void Bullet::move()
 	x = nextX;
 	y = nextY;
 
+	// Update distance traveled
+	distanceTraveled += BULLET_SPEED;
+	if (distanceTraveled >= BULLET_RANGE) {
+		isActive = false;
+		return;
+	}
+
 	// Update security map danger level
 	double current = pMap->getSecurityValue(cellY, cellX);
 	pMap->setSecurityValue(cellY, cellX, current + SECURITY);

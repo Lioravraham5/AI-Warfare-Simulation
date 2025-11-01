@@ -25,6 +25,7 @@ public:
 	Position getPosition() const { return position; }
 	TeamID getTeamID() const { return teamID; }
 	Map* getMap() const { return pMap; }
+	bool getIsAlive() const { return isAlive; }
 	
 	// Setters
 	void setPosition(Position p) { position = p; }

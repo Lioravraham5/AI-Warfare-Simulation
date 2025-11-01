@@ -14,6 +14,7 @@ class Bullet
 private:
 	double x, y;
 	double dirX, dirY;
+	double distanceTraveled = 0.0;
 	bool isActive = true;
 	Map* pMap = nullptr;
 

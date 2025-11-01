@@ -60,10 +60,13 @@
     <ClCompile Include="FSM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Node.cpp">
+    <ClCompile Include="NodeAStar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AStar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeBFS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -95,10 +98,13 @@
     <ClInclude Include="FSM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Node.h">
+    <ClInclude Include="NodeAStar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AStar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeBFS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

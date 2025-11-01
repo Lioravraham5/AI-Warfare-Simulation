@@ -1,10 +1,8 @@
 #pragma once
 #include "Map.h"
-#include "Node.h"
+#include "NodeAStar.h"
 
 // AStar.h:
-
-
 
 class AStar
 {
@@ -13,8 +11,8 @@ private:
 
 public:
 	AStar(Map* m);
-	Node* findPath(int startRow, int startCol, int targetRow, int targetCol);
-	Node* getNextStepTowardsTarget(Node* pGoalNode, int startRow, int startCol);
+	NodeAStar* findPath(int startRow, int startCol, int targetRow, int targetCol);
+	NodeAStar* getNextStepTowardsTarget(NodeAStar* pGoalNode, int startRow, int startCol);
 
 private:
 	void initBestG(int bestG[MAP_SIZE][MAP_SIZE]);
