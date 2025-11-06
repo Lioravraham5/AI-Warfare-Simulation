@@ -130,6 +130,7 @@
     <ClCompile Include="NodeAStar.cpp" />
     <ClCompile Include="NodeBFS.cpp" />
     <ClCompile Include="Order.cpp" />
+    <ClCompile Include="SupplierNPC.cpp" />
     <ClCompile Include="Warehouse.cpp" />
     <ClCompile Include="WarriorNPC.cpp" />
   </ItemGroup>
@@ -145,6 +146,7 @@
     <ClInclude Include="NodeAStar.h" />
     <ClInclude Include="NodeBFS.h" />
     <ClInclude Include="Order.h" />
+    <ClInclude Include="SupplierNPC.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Warehouse.h" />
     <ClInclude Include="WarriorNPC.h" />

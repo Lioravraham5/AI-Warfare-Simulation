@@ -21,8 +21,8 @@ enum WarriorState {
 	DEAD // Warrior is dead
 };
 
-static const int MAX_BULLETS = 30;
-static const int MAX_GRENADES = 5;
+static const int MAX_BULLETS = 50;
+static const int MAX_GRENADES = 10;
 static const int VIEW_RADIUS = 10;
 
 class WarriorNPC : public BaseNPC
@@ -45,10 +45,18 @@ public:
 	void tick() override;
 	void handleOrder(Order* pOrder);
 	void draw() const override;
-	void setEnemies(const vector<BaseNPC*>& enemies) { allEnemies = enemies; }
+	
+	//Getters:
 	const bool (*getVisibilityMap() const)[MAP_SIZE] { return visibilityMap; }
+	const int getBullets() { return bullets; }
+	const int getGrenades() { return grenades; }
 
+	//Setters:
+	void setEnemies(const vector<BaseNPC*>& enemies) { allEnemies = enemies; }
 
+	void addSupply(int val);
+	void subBullets(int val);
+	void subGrenades(int val);
 private:
 	bool hasLineOfSight(Map* pMap, int row1, int col1, int row2, int col2);
 	void updateVisibilityMap();

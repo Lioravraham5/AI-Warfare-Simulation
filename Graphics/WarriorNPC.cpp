@@ -204,6 +204,30 @@ void WarriorNPC::draw() const
 
 }
 
+void WarriorNPC::addSupply(int val)
+{
+	bullets += val;
+	grenades += val;
+	if (bullets >= MAX_BULLETS)
+		bullets = MAX_BULLETS;
+	if (grenades >= MAX_GRENADES)
+		grenades = MAX_GRENADES;
+}
+
+void WarriorNPC::subBullets(int val)
+{
+	bullets -= val;
+	if (bullets <= 0)
+		bullets = 0;
+}
+
+void WarriorNPC::subGrenades(int val)
+{
+	grenades -= val;
+	if (grenades <= 0)
+		grenades = 0;
+}
+
 // returns true if there is clear line of sight from (row1,col1) to (row2,col2)
 bool WarriorNPC::hasLineOfSight(Map* pMap, int row1, int col1, int row2, int col2)
 {

@@ -31,6 +31,7 @@ public:
 	
 	// Setters
 	void setPosition(Position p) { position = p; }
+
 	void addHealth(double val);
 	void subHealth(double val);
 
