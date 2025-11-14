@@ -38,9 +38,6 @@ Map::Map()
 	}
 
 	// Place warehouses
-		
-
-
 	for (TeamID team : { TEAM_1, TEAM_2 }) { // Assuming 2 teams
 		// Place Weapons Warehouse
 		while (true) {
@@ -105,7 +102,7 @@ void Map::generateCluster(int centerRow, int centerCol, int radius, CellType typ
 	}
 }
 
-bool Map::isEmptyAndValidCell(int row, int col)
+bool Map::isEmptyAndValidCell(int row, int col) const
 {
 	return (row >= 0 && row < MAP_SIZE && col >= 0 && col < MAP_SIZE && map[row][col] == EMPTY);
 }

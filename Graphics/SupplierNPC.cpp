@@ -32,10 +32,10 @@ void SupplierNPC::tick()
 	switch (fsm.getCurrentState())
 	{
 	case SUPPLIER_IDLE:
-		// do nothing
+		handleSupplyRequest();
 		break;
 
-	case SUPPLIER_MOVE_TO_WAREHOUSE:
+	case SUPPLIER_MOVE_TO_WAREHOUSE: {
 		NodeAStar* pNext = pAStar->getNextStepTowardsTarget(
 			pGoalNode,
 			position.row,
@@ -58,8 +58,9 @@ void SupplierNPC::tick()
 			}
 		}
 		break;
+	}
 
-	case SUPPLIER_MOVE_TO_SOLDIER:
+	case SUPPLIER_MOVE_TO_SOLDIER: {
 		NodeAStar* pNext = pAStar->getNextStepTowardsTarget(
 			pGoalNode,
 			position.row,
@@ -82,6 +83,7 @@ void SupplierNPC::tick()
 			}
 		}
 		break;
+	}
 
 	case SUPPLIER_SUPPLYING:
 		if (targetSoldier == nullptr) {
@@ -101,37 +103,6 @@ void SupplierNPC::tick()
 	case SUPPLIER_DEAD:
 		break;
 	}
-}
-
-void SupplierNPC::handleOrder(Order* pOrder)
-{
-	if (!pOrder)
-		return;
-
-	switch (pOrder->getType())
-	{
-	case RESUPPLY:
-		// Go to weapons warehouse
-		pGoalNode = pAStar->findPath(
-			position.row,
-			position.col,
-			warehousePosition.row,
-			warehousePosition.col);
-
-		// Set soldier position
-		if (pOrder->getTarget()) {
-			supplySoldierPosition.row = pOrder->getTarget()->row;
-			supplySoldierPosition.col = pOrder->getTarget()->col;
-		}
-
-		fsm.setCurrentState(SUPPLIER_MOVE_TO_WAREHOUSE);
-		break;
-
-	default:
-		fsm.setCurrentState(SUPPLIER_IDLE);
-		break;
-	}
-
 }
 
 void SupplierNPC::draw() const
@@ -160,6 +131,21 @@ void SupplierNPC::draw() const
 	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, 'P');
 }
 
+void SupplierNPC::addSupplyRequest(WarriorNPC* soldier)
+{
+	// Exit if the soldier is dead or nullptr
+	if (soldier == nullptr || !soldier->getIsAlive())
+		return;
+
+	// avoid duplicate requests:
+	if (supplyRequestsSet.find(soldier) != supplyRequestsSet.end())
+		return; // this soldier already has an active request 
+
+	// add soldier
+	supplyRequests.push(soldier);
+	supplyRequestsSet.insert(soldier);
+}
+
 Position SupplierNPC::getWeaponsWarehousePosition()
 {
 	// const Warehouse& w - relate to each warehouse as a const object and get the reference of it to prevent coping
@@ -167,6 +153,33 @@ Position SupplierNPC::getWeaponsWarehousePosition()
 		if (w.getType() == WEAPONS && w.getTeamID() == teamID) {
 			return { w.getRow(), w.getCol() };
 		}
-		return { 0,0 }; // shouldn't happen
 	}
+	return { 0,0 }; // shouldn't happen
+}
+
+void SupplierNPC::handleSupplyRequest()
+{
+	// Exit if there is no heal requests 
+	if (supplyRequests.empty())
+		return;
+
+	// get soldier
+	WarriorNPC* suppliedSoldier = supplyRequests.front();
+	supplyRequests.pop();
+	supplyRequestsSet.erase(suppliedSoldier);
+
+	if (suppliedSoldier == nullptr || !suppliedSoldier->getIsAlive())
+		return;
+
+	targetSoldier = suppliedSoldier;
+	supplySoldierPosition = suppliedSoldier->getPosition();
+
+	// Go to medicine warehouse
+	pGoalNode = pAStar->findPath(
+		position.row,
+		position.col,
+		warehousePosition.row,
+		warehousePosition.col);
+
+	fsm.setCurrentState(SUPPLIER_MOVE_TO_WAREHOUSE);
 }

@@ -7,6 +7,10 @@
 // BaseNPC.h:
 
 static const double MAX_HEALTH = 100.0;
+static const int VIEW_RADIUS = 10;
+
+// Forward declaration:
+class Map;
 
 class BaseNPC
 {

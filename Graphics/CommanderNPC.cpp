@@ -2,9 +2,12 @@
 #include "glut.h"
 #include "WarriorNPC.h"
 
-CommanderNPC::CommanderNPC(Position p, TeamID t, Map* m) : BaseNPC(p, t, m)
+CommanderNPC::CommanderNPC(Position p, TeamID t, Map* m, MedicNPC* med, SupplierNPC* s, vector<WarriorNPC*> warriors) : BaseNPC(p, t, m), fsm(COMMANDER_IDLE)
 {
 	pAStar = new AStar(m);
+	medic = med;
+	supplier = s;
+	this->warriors = warriors;
 }
 
 CommanderNPC::~CommanderNPC()
@@ -16,18 +19,51 @@ void CommanderNPC::tick()
 {
 	// Check if alive
 	if (!isAlive) {
+		fsm.setCurrentState(COMMANDER_DEAD);
 		return;
 	}
 
+	// Check for death
 	if (health <= 0) {
 		isAlive = false;
+		fsm.setCurrentState(COMMANDER_DEAD);
 		return;
 	}
 
+	// Generate visibility map
 	generateCombinedVisibilityMap();
 
+	// Detect if any enemy is seen by any warrior
+	bool isEnemyDetected = isEnemyDetectedByWarrior();
 
+	if (isEnemyDetected) {
 
+		// Set ATTACK mode:
+
+		for (WarriorNPC* warrior : warriors) {
+			if (warrior == nullptr || !warrior->getIsAlive())
+				continue;
+
+			Order* attackOrder = new Order(ATTACK, nullptr);
+			warrior->handleOrder(attackOrder);
+		}
+	}
+	else {
+
+		// Set DEFEND mode:
+
+		for (WarriorNPC* warrior : warriors) {
+			if (warrior == nullptr || !warrior->getIsAlive())
+				continue;
+
+			Order* defendOrder = new Order(DEFEND, nullptr);
+			warrior->handleOrder(defendOrder);
+		}
+	}
+
+	// Commander moves to safest position in VIEW_RADIUS
+	NodeBFS* pSafestPosition = findSafestPosition();
+	moveOneStepToward(pSafestPosition);
 }
 
 void CommanderNPC::draw() const
@@ -56,30 +92,14 @@ void CommanderNPC::draw() const
 	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, 'C');
 }
 
-void CommanderNPC::requestSupply(BaseNPC* soldier)
+void CommanderNPC::requestSupply(WarriorNPC* soldier)
 {
-	if (!soldier)
-		return;
-
-	// avoid duplicate requests:
-	for (BaseNPC* request : supplyRequests)
-		if (request == soldier)
-			return;
-
-	supplyRequests.push_back(soldier);
+	supplier->addSupplyRequest(soldier);	
 }
 
-void CommanderNPC::requestHeal(BaseNPC* soldier)
+void CommanderNPC::requestHeal(WarriorNPC* injuredSoldier)
 {
-	if (!soldier)
-		return;
-
-	// avoid duplicate requests:
-	for (BaseNPC* request : healRequests)
-		if (request == soldier)
-			return;
-
-	healRequests.push_back(soldier);
+	medic->addHealRequests(injuredSoldier);
 }
 
 void CommanderNPC::generateCombinedVisibilityMap()
@@ -89,8 +109,7 @@ void CommanderNPC::generateCombinedVisibilityMap()
 		for (int j = 0; j < MAP_SIZE; j++)
 			combinedVisibilityMap[i][j] = false;
 	
-	for (BaseNPC* soldier : teamMembers) {
-		auto pWarrior = dynamic_cast<WarriorNPC*>(soldier);
+	for (WarriorNPC* pWarrior : warriors) {
 
 		if (!pWarrior) 
 			continue;
@@ -104,3 +123,106 @@ void CommanderNPC::generateCombinedVisibilityMap()
 			}
 	}
 }
+
+bool CommanderNPC::isEnemyDetectedByWarrior() const
+{
+	for (int i = 0; i < MAP_SIZE; i++) {
+		for (int j = 0; j < MAP_SIZE; j++) {
+			if (combinedVisibilityMap[i][j])
+				return true;
+		}
+	}
+
+	return false;
+}
+
+NodeBFS* CommanderNPC::findSafestPosition()
+{
+	queue<NodeBFS*> q;
+	bool visited[MAP_SIZE][MAP_SIZE] = { false };
+
+	NodeBFS* pStart = new NodeBFS(position.row, position.col, 0, nullptr);
+	q.push(pStart);
+	visited[position.row][position.col] = true;
+
+	const int directionRow[4] = { 1, -1, 0, 0 };
+	const int directionCol[4] = { 0, 0, 1, -1 };
+
+	double bestSecurityValue = pMap->getSecurityValue(position.row, position.col);
+	NodeBFS* pBestNode = pStart;
+
+	while (!q.empty())
+	{
+		NodeBFS* pCurrent = q.front();
+		q.pop();
+
+		int currentRow = pCurrent->getRow();
+		int currentCol = pCurrent->getCol();
+		int currentDepth = pCurrent->getDepth();
+
+		if (currentDepth > VIEW_RADIUS)
+			continue;
+
+		if (pMap->isPassable(currentRow, currentCol)) {
+			double currentSecurityValue = pMap->getSecurityValue(currentRow, currentCol);
+			if (currentSecurityValue < bestSecurityValue) {
+				bestSecurityValue = currentSecurityValue;
+				pBestNode = pCurrent;
+			}
+		}
+
+		// Explore neighbors:
+		for (int k=0; k < 4; k++)
+		{
+			int neighborRow = currentRow + directionRow[k];
+			int neighborCol = currentCol + directionCol[k];
+
+			if (!pMap->isPassable(neighborRow, neighborCol))
+				continue;
+
+			if (visited[neighborRow][neighborCol])
+				continue;
+
+			visited[neighborRow][neighborCol] = true;
+			q.push(new NodeBFS(neighborRow, neighborCol, currentDepth + 1, pCurrent));
+
+		}
+	}
+	return pBestNode;
+}
+
+void CommanderNPC::moveOneStepToward(NodeBFS* pSafestNode)
+{
+	if (!pSafestNode)
+		return;
+
+	// Already at the safest location
+	if (pSafestNode->getRow() == position.row &&
+		pSafestNode->getCol() == position.col)
+		return;
+
+	// Plan path using A*
+	NodeAStar* path = pAStar->findPath(
+		position.row, 
+		position.col,
+		pSafestNode->getRow(), 
+		pSafestNode->getCol());
+
+	if (path == nullptr)
+		return;
+
+	// Get next step
+	NodeAStar* nextStepNode = pAStar->getNextStepTowardsTarget(
+		path, 
+		position.row, 
+		position.col);
+
+	if (nextStepNode == nullptr)
+		return;
+
+	// Set next step
+	position.row = nextStepNode->getRow();
+	position.col = nextStepNode->getCol();	
+}
+
+

@@ -53,7 +53,7 @@ void Bullet::move()
 	pMap->setSecurityValue(cellY, cellX, current + SECURITY);
 }
 
-void Bullet::draw()
+void Bullet::draw() const
 {
 	if(!isActive)
 		return;

@@ -38,7 +38,7 @@ public:
 	
 	// Getters:
 	int getCellType(int row, int col) const { return map[row][col]; }
-	vector<Warehouse> getWarehouses() const { return warehouses; }
+	const vector<Warehouse>& getWarehouses() const { return warehouses; }
 	double getSecurityValue(int row, int col) const { return securityMap[row][col]; }
 	
 	// Setters:
@@ -52,7 +52,7 @@ public:
 
 private:
 	void generateCluster(int centerRow, int centerCol, int radius, CellType type);
-	bool isEmptyAndValidCell(int row, int col);
+	bool isEmptyAndValidCell(int row, int col) const;
 	bool canPlaceWarehouse(int row, int col);
 	void drawEmptyCell(int row, int col) const;
 	void drawRockCell(int row, int col) const;

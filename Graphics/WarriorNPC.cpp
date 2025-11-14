@@ -3,16 +3,17 @@
 #include "Bullet.h"
 #include "Grenade.h"
 #include <queue>
+#include "AStar.h"
 #include "NodeBFS.h"
 
 // WarriorNPC.cpp:
 
-WarriorNPC::WarriorNPC(Position p, TeamID t, Map* m) : BaseNPC(p, t, m), fsm(IDLE)
+WarriorNPC::WarriorNPC(Position p, TeamID t, Map* m, CommanderNPC* c) : BaseNPC(p, t, m), fsm(WARRIOR_IDLE)
 {
 	bullets = MAX_BULLETS;
 	grenades = MAX_GRENADES;
 	pAStar = new AStar(m);
-
+	pCommander = c;
 }
 
 WarriorNPC::~WarriorNPC()
@@ -24,31 +25,29 @@ void WarriorNPC::tick()
 {
 	// Check if alive
 	if(!isAlive) {
-		fsm.setCurrentState(DEAD);
+		fsm.setCurrentState(WARRIOR_DEAD);
 		return;
 	}
 
 	// Check for death
 	if(health <= 0) {
 		isAlive = false;
-		fsm.setCurrentState(DEAD);
+		fsm.setCurrentState(WARRIOR_DEAD);
 		return;
 	}
 
 	// Check health status
 	if (health < 0.25 * MAX_HEALTH) {
-		fsm.setCurrentState(WAIT_FOR_HEALING);
-		// ADD: notify commander about low health
-		// pCommander->requestMedic(this);
-		fsm.setCurrentState(WAIT_FOR_HEALING);
+		fsm.setCurrentState(WARRIOR_WAIT_FOR_HEALING);
+		pCommander->requestHeal(this);
+		fsm.setCurrentState(WARRIOR_WAIT_FOR_HEALING);
 		return;
 	}
 
 	if(bullets < 0.25 * MAX_BULLETS && grenades < 0.25 * MAX_GRENADES) {
-		fsm.setCurrentState(WAIT_FOR_SUPPLY);
-		// ADD: notify commander about low ammo
-		// pCommander->requestSupply(this)
-		fsm.setCurrentState(WAIT_FOR_SUPPLY);
+		fsm.setCurrentState(WARRIOR_WAIT_FOR_SUPPLY);
+		pCommander->requestSupply(this);
+		fsm.setCurrentState(WARRIOR_WAIT_FOR_SUPPLY);
 	}
 
 	updateVisibilityMap();
@@ -56,15 +55,15 @@ void WarriorNPC::tick()
 	// fsm behavior
 	switch (fsm.getCurrentState())
 	{
-	case IDLE:
+	case WARRIOR_IDLE:
 		// do nothing
 		break;
 
-	case MOVE_TO_GIVEN_POSITION:
-	case MOVE_TO_COVER_POSITION:
+	case WARRIO_MOVE_TO_GIVEN_POSITION:
+	case WARRIOR_MOVE_TO_COVER_POSITION: {
 		NodeAStar* pNextStep = pAStar->getNextStepTowardsTarget(
 			pGoalNode,
-			position.row, 
+			position.row,
 			position.col);
 		if (pNextStep) {
 			position.row = pNextStep->getRow();
@@ -72,19 +71,20 @@ void WarriorNPC::tick()
 
 			if (position.row == pSafestNode->getRow() &&
 				position.col == pSafestNode->getCol()) {
-				fsm.setCurrentState(IDLE);
+				fsm.setCurrentState(WARRIOR_IDLE);
 			}
 		}
 		else {
 			// Reached destination
-			fsm.setCurrentState(IDLE);
+			fsm.setCurrentState(WARRIOR_IDLE);
 		}
 		break;
+	}
 
-	case MOVE_TO_ATTACK_POSITION:
+	case WARRIOR_MOVE_TO_ATTACK_POSITION: {
 		NodeAStar* pNextStep = pAStar->getNextStepTowardsTarget(
-			pGoalNode, 
-			position.row, 
+			pGoalNode,
+			position.row,
 			position.col);
 		if (pNextStep) {
 			position.row = pNextStep->getRow();
@@ -92,33 +92,34 @@ void WarriorNPC::tick()
 		}
 		else {
 			// Reached for the best attack position
-			fsm.setCurrentState(ATTACKING);
+			fsm.setCurrentState(WARRIOR_ATTACKING);
 		}
 		break;
+	}
 
-	case ATTACKING:
+	case WARRIOR_ATTACKING:
 		attackBehavior();
 		break;
 
-	case WAIT_FOR_SUPPLY:
+	case WARRIOR_WAIT_FOR_SUPPLY:
 		// ADD: implement waiting for supply behavior
 		break;
 
-	case IN_SUPPLY_PROCESS:
+	case WARRIOR_IN_SUPPLY_PROCESS:
 		// ADD: implement in supply process behavior
 		break;
 
-	case WAIT_FOR_HEALING:
+	case WARRIOR_WAIT_FOR_HEALING:
 		// ADD: implement waiting for healing behavior
 		break;
 
-	case IN_HEALING_PROCESS:
+	case WARRIOR_IN_HEALING_PROCESS:
 		// ADD: implement in healing process behavior
 		if (health == MAX_HEALTH)
-			fsm.setCurrentState(IDLE);
+			fsm.setCurrentState(WARRIOR_IDLE);
 		break;
 
-	case DEAD:
+	case WARRIOR_DEAD:
 		// do nothing
 		break;
 
@@ -131,49 +132,52 @@ void WarriorNPC::handleOrder(Order* pOrder)
 {
 	switch (pOrder->getType())
 	{
-		case MOVE_TO_POSITION:
+	case MOVE_TO_POSITION: {
+		pGoalNode = pAStar->findPath(
+			position.row,
+			position.col,
+			pOrder->getTarget()->row,
+			pOrder->getTarget()->col);
+		fsm.setCurrentState(WARRIO_MOVE_TO_GIVEN_POSITION);
+		break;
+	}
+
+	case ATTACK: {
+		updateVisibilityMap();
+		BaseNPC* pTargetEnemy = findBestVisibleEnemy();
+		if (pTargetEnemy) {
+			Position bestPosition = findBestAttackPosition(pTargetEnemy);
 			pGoalNode = pAStar->findPath(
 				position.row,
-				position.col, 
-				pOrder->getTarget()->row,
-				pOrder->getTarget()->col);
-			fsm.setCurrentState(MOVE_TO_GIVEN_POSITION);
+				position.col,
+				bestPosition.row,
+				bestPosition.col);
+			fsm.setCurrentState(WARRIOR_MOVE_TO_ATTACK_POSITION);
+		}
+		else {
+			fsm.setCurrentState(WARRIOR_IDLE);
+		}
 		break;
-
-		case ATTACK:
-			updateVisibilityMap();
-			BaseNPC* pTargetEnemy = findBestVisibleEnemy();
-			if (pTargetEnemy) {
-				Position bestPosition = findBestAttackPosition(pTargetEnemy);
-				pGoalNode = pAStar->findPath(
-					position.row,
-					position.col,
-					bestPosition.row,
-					bestPosition.col);
-				fsm.setCurrentState(MOVE_TO_ATTACK_POSITION);
-			} 
-			else {
-				fsm.setCurrentState(IDLE);
-			}
-			break;
-		case DEFEND:
-			// Search for cover position using BFS
-			pSafestNode = findSafestPosition();
-			if (pSafestNode) {
-				pGoalNode = pAStar->findPath(
-					position.row,
-					position.col, 
-					pSafestNode->getRow(), 
-					pSafestNode->getCol());
-				fsm.setCurrentState(MOVE_TO_COVER_POSITION);
-			}
-			else {
-				fsm.setCurrentState(IDLE);
-			}
-			break;
-		default:
-			fsm.setCurrentState(IDLE);
-			break;
+	}
+	case DEFEND: {
+		// Search for cover position using BFS
+		pSafestNode = findSafestPosition();
+		if (pSafestNode) {
+			pGoalNode = pAStar->findPath(
+				position.row,
+				position.col,
+				pSafestNode->getRow(),
+				pSafestNode->getCol());
+			fsm.setCurrentState(WARRIOR_MOVE_TO_COVER_POSITION);
+		}
+		else {
+			fsm.setCurrentState(WARRIOR_IDLE);
+		}
+		break;
+	}
+	default:
+		fsm.setCurrentState(WARRIOR_IDLE);
+		break;
 	}
 }
 
@@ -382,7 +386,7 @@ void WarriorNPC::attackBehavior()
 	BaseNPC* pTargetEnemy = findBestVisibleEnemy();
 	if (!pTargetEnemy) {
 		// No enemies in sight
-		fsm.setCurrentState(IDLE);
+		fsm.setCurrentState(WARRIOR_IDLE);
 		return; 
 	}
 
@@ -396,7 +400,7 @@ void WarriorNPC::attackBehavior()
 			position.col,
 			bestAttackPosition.row, 
 			bestAttackPosition.col);
-		fsm.setCurrentState(MOVE_TO_ATTACK_POSITION);
+		fsm.setCurrentState(WARRIOR_MOVE_TO_ATTACK_POSITION);
 		return;
 	}
 
@@ -428,7 +432,7 @@ void WarriorNPC::attackBehavior()
 	}
 	else if (bullets == 0 && grenades == 0) {
 		// pCommander->requestSupply(this)
-		fsm.setCurrentState(WAIT_FOR_SUPPLY);
+		fsm.setCurrentState(WARRIOR_WAIT_FOR_SUPPLY);
 	}
 	else {
 		// No clear line of sight, reposition to a better attack position
@@ -440,7 +444,7 @@ void WarriorNPC::attackBehavior()
 			bestAttackPosition.row,
 			bestAttackPosition.col);
 
-		fsm.setCurrentState(MOVE_TO_ATTACK_POSITION);
+		fsm.setCurrentState(WARRIOR_MOVE_TO_ATTACK_POSITION);
 	}
 }
 
@@ -480,7 +484,7 @@ NodeBFS* WarriorNPC::findSafestPosition()
 		}
 
 		// Explore neighbors:
-		for (int k; k < 4; k++)
+		for (int k = 0; k < 4; k++)
 		{
 			int neighborRow = currentRow + directionRow[k];
 			int neighborCol = currentCol + directionCol[k];

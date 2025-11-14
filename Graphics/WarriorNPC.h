@@ -5,25 +5,28 @@
 #include "NodeBFS.h"
 #include "Bullet.h"
 #include "Grenade.h"
+#include "CommanderNPC.h"
 
 // WarriorNPC.h:
 
 enum WarriorState {
-	IDLE, // Warrior is idle - not performing any action
-	MOVE_TO_GIVEN_POSITION, // Warrior is moving to a specified position via A*
-	MOVE_TO_ATTACK_POSITION, // Warrior is moving to an attack position via A*
-	ATTACKING, // Warrior is attacking an enemy within range - shooting / throwing grenade
-	MOVE_TO_COVER_POSITION, // Warrior is moving to the selected cover position via A*
-	WAIT_FOR_SUPPLY, // Warrior is waiting for supplies from Provider
-	IN_SUPPLY_PROCESS, // Warrior is being supplied by Provider
-	WAIT_FOR_HEALING, // Warrior is waiting for healing from Medic
-	IN_HEALING_PROCESS, // Warrior is being healed by Medic
-	DEAD // Warrior is dead
+	WARRIOR_IDLE, // Warrior is idle - not performing any action
+	WARRIO_MOVE_TO_GIVEN_POSITION, // Warrior is moving to a specified position via A*
+	WARRIOR_MOVE_TO_ATTACK_POSITION, // Warrior is moving to an attack position via A*
+	WARRIOR_ATTACKING, // Warrior is attacking an enemy within range - shooting / throwing grenade
+	WARRIOR_MOVE_TO_COVER_POSITION, // Warrior is moving to the selected cover position via A*
+	WARRIOR_WAIT_FOR_SUPPLY, // Warrior is waiting for supplies from Provider
+	WARRIOR_IN_SUPPLY_PROCESS, // Warrior is being supplied by Provider
+	WARRIOR_WAIT_FOR_HEALING, // Warrior is waiting for healing from Medic
+	WARRIOR_IN_HEALING_PROCESS, // Warrior is being healed by Medic
+	WARRIOR_DEAD // Warrior is dead
 };
 
 static const int MAX_BULLETS = 50;
 static const int MAX_GRENADES = 10;
-static const int VIEW_RADIUS = 10;
+
+// forward decleration:
+class CommanderNPC;
 
 class WarriorNPC : public BaseNPC
 {
@@ -38,9 +41,10 @@ private:
 	vector<Bullet*> activeBullets;
 	vector<Grenade*> activeGrenades;
 	vector<BaseNPC*> allEnemies;
+	CommanderNPC* pCommander = nullptr;
 
 public:
-	WarriorNPC(Position p, TeamID t, Map* m);
+	WarriorNPC(Position p, TeamID t, Map* m, CommanderNPC* c);
 	virtual ~WarriorNPC();
 	void tick() override;
 	void handleOrder(Order* pOrder);
@@ -48,8 +52,8 @@ public:
 	
 	//Getters:
 	const bool (*getVisibilityMap() const)[MAP_SIZE] { return visibilityMap; }
-	const int getBullets() { return bullets; }
-	const int getGrenades() { return grenades; }
+	int getBullets() const { return bullets; }
+	int getGrenades() const { return grenades; }
 
 	//Setters:
 	void setEnemies(const vector<BaseNPC*>& enemies) { allEnemies = enemies; }

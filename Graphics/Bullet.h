@@ -7,7 +7,7 @@
 const double BULLET_SPEED = 0.1;
 const int BULLET_DAMAGE = 5;
 const double BULLET_RANGE = 5.0;
-const int SECURITY = 0.003;
+const int SECURITY = 1;
 
 class Bullet
 {
@@ -21,7 +21,7 @@ private:
 public:
 	Bullet(double xPos, double yPos, double angle,Map* m);
 	void move();
-	void draw();
+	void draw() const;
 	void setIsActive(bool active) { isActive = active; }
 };
 
