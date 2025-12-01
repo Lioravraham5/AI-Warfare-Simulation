@@ -21,24 +21,6 @@ Grenade::Grenade(double xPos, double yPos, Map* m)
 	pMap = m;
 }
 
-void Grenade::Explode()
-{
-	for (int i = 0; i < GRENADE_BULLETS; i++)
-	{
-		bullets[i]->move();
-	}
-}
-
-void Grenade::setIsExploded(bool value)
-{
-	isExploded = value;
-
-	for (int i = 0; i < GRENADE_BULLETS; i++)
-	{
-		bullets[i]->setIsActive(value);
-	}
-}
-
 void Grenade::draw()
 {
 	for (int i = 0; i < GRENADE_BULLETS; i++)

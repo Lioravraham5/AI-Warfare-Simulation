@@ -16,8 +16,9 @@ private:
 
 public:
 	Grenade(double xPos, double yPos, Map* m);
-	void Explode();
-	void setIsExploded(bool value);
 	void draw();
+
+	// Getters:
+	Bullet** getBullets() { return bullets; }
 };
 

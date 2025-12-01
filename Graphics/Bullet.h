@@ -22,6 +22,13 @@ public:
 	Bullet(double xPos, double yPos, double angle,Map* m);
 	void move();
 	void draw() const;
+
+	// Getters:
+	double getX() const { return x; }
+	double getY() const { return y; }
+	bool getIsActive() const { return isActive; }
+	
+	// Setters:
 	void setIsActive(bool active) { isActive = active; }
 };
 

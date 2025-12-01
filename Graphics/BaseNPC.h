@@ -46,5 +46,7 @@ public:
 
 	// Utilities
 
+protected:
+	void drawNPC(char symbol) const;
 };
 

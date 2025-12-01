@@ -8,12 +8,13 @@
 
 // WarriorNPC.cpp:
 
-WarriorNPC::WarriorNPC(Position p, TeamID t, Map* m, CommanderNPC* c) : BaseNPC(p, t, m), fsm(WARRIOR_IDLE)
+WarriorNPC::WarriorNPC(Position p, TeamID t, Map* m, CommanderNPC* c, BulletsManager* bm) : BaseNPC(p, t, m), fsm(WARRIOR_IDLE)
 {
 	bullets = MAX_BULLETS;
 	grenades = MAX_GRENADES;
 	pAStar = new AStar(m);
 	pCommander = c;
+	bulletsManager = bm;
 }
 
 WarriorNPC::~WarriorNPC()
@@ -183,29 +184,7 @@ void WarriorNPC::handleOrder(Order* pOrder)
 
 void WarriorNPC::draw() const
 {
-	switch (teamID)
-	{
-	case TEAM_1:
-		glColor3d(0, 0, 1); // Blue for Team 1
-		break;
-	case TEAM_2:
-		glColor3d(1, 0, 0); // Red for Team 2
-		break;
-	}
-
-	// draw warrior as a square
-	glBegin(GL_POLYGON);
-	glVertex2d(position.col, position.row);
-	glVertex2d(position.col, position.row + 1);
-	glVertex2d(position.col + 1, position.row + 1);
-	glVertex2d(position.col + 1, position.row);
-	glEnd();
-
-	// Draw letter 'W' above the square
-	glColor3d(0, 0, 0); // black text
-	glRasterPos2d(position.col + 0.35, position.row + 1.2); // position slightly above square
-	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, 'W');
-
+	drawNPC('w');
 }
 
 void WarriorNPC::addSupply(int val)
@@ -419,15 +398,13 @@ void WarriorNPC::attackBehavior()
 			pTargetEnemy->getPosition().col - position.col);
 
 		Bullet* b = new Bullet(position.col, position.row, angle, pMap);
-		b->setIsActive(true);
-		activeBullets.push_back(b);
+		bulletsManager->addBullet(b);
 		bullets--;
 	}
 	else if (grenades > 0 && distanceToEnemy <= BULLET_RANGE) {
 		// Throw a grenade (backup weapon)
 		Grenade* g = new Grenade(position.col + 0.5, position.row + 0.5, pMap);
-		g->setIsExploded(true);
-		activeGrenades.push_back(g);
+		bulletsManager->addGrenade(g);
 		grenades--;
 	}
 	else if (bullets == 0 && grenades == 0) {

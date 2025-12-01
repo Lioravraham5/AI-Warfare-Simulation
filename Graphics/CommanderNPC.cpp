@@ -68,28 +68,7 @@ void CommanderNPC::tick()
 
 void CommanderNPC::draw() const
 {
-	switch (teamID)
-	{
-	case TEAM_1:
-		glColor3d(0, 0, 1); // Blue for Team 1
-		break;
-	case TEAM_2:
-		glColor3d(1, 0, 0); // Red for Team 2
-		break;
-	}
-
-	// draw commander as a square
-	glBegin(GL_POLYGON);
-	glVertex2d(position.col, position.row);
-	glVertex2d(position.col, position.row + 1);
-	glVertex2d(position.col + 1, position.row + 1);
-	glVertex2d(position.col + 1, position.row);
-	glEnd();
-
-	// Draw letter 'C' above the square
-	glColor3d(0, 0, 0); // black text
-	glRasterPos2d(position.col + 0.35, position.row + 1.2); // position slightly above square
-	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, 'C');
+	drawNPC('c');
 }
 
 void CommanderNPC::requestSupply(WarriorNPC* soldier)

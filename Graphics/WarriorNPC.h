@@ -6,6 +6,7 @@
 #include "Bullet.h"
 #include "Grenade.h"
 #include "CommanderNPC.h"
+#include "BulletsManager.h"
 
 // WarriorNPC.h:
 
@@ -25,7 +26,7 @@ enum WarriorState {
 static const int MAX_BULLETS = 50;
 static const int MAX_GRENADES = 10;
 
-// forward decleration:
+// forward declaration:
 class CommanderNPC;
 
 class WarriorNPC : public BaseNPC
@@ -38,13 +39,12 @@ private:
 	NodeAStar* pGoalNode = nullptr; // store the target position found by A-Star 
 	NodeBFS* pSafestNode = nullptr; // store the safest point found by BFS
 	bool visibilityMap[MAP_SIZE][MAP_SIZE];
-	vector<Bullet*> activeBullets;
-	vector<Grenade*> activeGrenades;
 	vector<BaseNPC*> allEnemies;
 	CommanderNPC* pCommander = nullptr;
+	BulletsManager* bulletsManager = nullptr;
 
 public:
-	WarriorNPC(Position p, TeamID t, Map* m, CommanderNPC* c);
+	WarriorNPC(Position p, TeamID t, Map* m, CommanderNPC* c, BulletsManager* bm);
 	virtual ~WarriorNPC();
 	void tick() override;
 	void handleOrder(Order* pOrder);

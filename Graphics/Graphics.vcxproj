@@ -121,6 +121,7 @@
     <ClCompile Include="AStar.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="BaseNPC.cpp" />
+    <ClCompile Include="BulletsManager.cpp" />
     <ClCompile Include="CommanderNPC.cpp" />
     <ClCompile Include="FSM.cpp" />
     <ClCompile Include="Grenade.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="AStar.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="BaseNPC.h" />
+    <ClInclude Include="BulletsManager.h" />
     <ClInclude Include="CommanderNPC.h" />
     <ClInclude Include="FSM.h" />
     <ClInclude Include="Grenade.h" />
