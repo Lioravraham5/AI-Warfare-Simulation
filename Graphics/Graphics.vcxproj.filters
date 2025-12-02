@@ -87,6 +87,9 @@
     <ClCompile Include="BulletsManager.cpp">
       <Filter>Source Files\Models\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="GameController.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Map.h">
@@ -136,6 +139,9 @@
     </ClInclude>
     <ClInclude Include="BulletsManager.h">
       <Filter>Header Files\Models\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="GameController.h">
+      <Filter>Header Files\Models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,17 +4,18 @@
 #include <math.h>
 #include "glut.h"
 #include "Map.h"
+#include "GameController.h"
 
 // main.cpp:
 
-Map* pMap;
+GameController* game;
 
 void init()
 {
 	glClearColor(0.6, 0.8, 0.6, 0);// color of window background
 	glOrtho(0, MAP_SIZE, 0, MAP_SIZE, -1, 1); // set the coordinates system
 
-	pMap = new Map();
+	game = new GameController();
 }
 
 
@@ -22,7 +23,8 @@ void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT); // clean frame buffer
 
-	pMap->drawMap();
+	game->tick();
+	game->drawGame();
 
 	glutSwapBuffers(); // show all
 }
@@ -47,4 +49,6 @@ void main(int argc, char* argv[])
 	init();
 
 	glutMainLoop();
+
+	delete game;
 }

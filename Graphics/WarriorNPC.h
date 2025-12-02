@@ -57,6 +57,7 @@ public:
 
 	//Setters:
 	void setEnemies(const vector<BaseNPC*>& enemies) { allEnemies = enemies; }
+	void setCommander(CommanderNPC* c) { pCommander = c; }
 
 	void addSupply(int val);
 	void subBullets(int val);

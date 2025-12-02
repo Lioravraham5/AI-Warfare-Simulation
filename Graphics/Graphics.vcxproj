@@ -124,6 +124,7 @@
     <ClCompile Include="BulletsManager.cpp" />
     <ClCompile Include="CommanderNPC.cpp" />
     <ClCompile Include="FSM.cpp" />
+    <ClCompile Include="GameController.cpp" />
     <ClCompile Include="Grenade.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="BulletsManager.h" />
     <ClInclude Include="CommanderNPC.h" />
     <ClInclude Include="FSM.h" />
+    <ClInclude Include="GameController.h" />
     <ClInclude Include="Grenade.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MedicNPC.h" />
