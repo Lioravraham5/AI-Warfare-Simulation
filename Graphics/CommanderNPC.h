@@ -42,5 +42,6 @@ private:
 	bool isEnemyDetectedByWarrior() const;
 	NodeBFS* findSafestPosition();
 	void moveOneStepToward(NodeBFS* pSafestNode);
+	const char* commanderStateToString(CommanderState state);
 };
 

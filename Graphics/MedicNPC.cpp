@@ -16,6 +16,11 @@ MedicNPC::~MedicNPC()
 
 void MedicNPC::tick()
 {
+	std::cout << "DEBUG: MedicNPC="
+		<< this
+		<< ", state="
+		<< medicStateToString(this->fsm.getCurrentState()) << std::endl;
+
 	// Check if alive
 	if (!isAlive) {
 		fsm.setCurrentState(MEDIC_DEAD);
@@ -162,4 +167,16 @@ void MedicNPC::handleHealRequest()
 		warehousePosition.col);
 
 	fsm.setCurrentState(MEDIC_MOVE_TO_WAREHOUSE);
+}
+
+const char* MedicNPC::medicStateToString(MedicState state)
+{
+	switch (state) {
+	case MEDIC_IDLE:    return "MEDIC_IDLE";
+	case MEDIC_MOVE_TO_WAREHOUSE:  return "MEDIC_MOVE_TO_WAREHOUSE";
+	case MEDIC_MOVE_TO_SOLDIER:  return "MEDIC_MOVE_TO_SOLDIER";
+	case MEDIC_HEALING:  return "MEDIC_HEALING";
+	case MEDIC_DEAD:  return "MEDIC_DEAD";
+	default:return "UNKNOWN";
+	}
 }

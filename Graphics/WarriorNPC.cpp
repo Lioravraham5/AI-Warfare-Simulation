@@ -5,6 +5,7 @@
 #include <queue>
 #include "AStar.h"
 #include "NodeBFS.h"
+#include <iostream>
 
 // WarriorNPC.cpp:
 
@@ -24,6 +25,11 @@ WarriorNPC::~WarriorNPC()
 
 void WarriorNPC::tick()
 {
+	std::cout << "DEBUG: WarriorNPC="
+		<< this
+		<< ", state="
+		<< warriorStateToString(this->fsm.getCurrentState()) << std::endl;
+
 	// Check if alive
 	if(!isAlive) {
 		fsm.setCurrentState(WARRIOR_DEAD);
@@ -497,6 +503,23 @@ NodeBFS* WarriorNPC::getNextStepToSafestPosition(NodeBFS* pSafestNode)
 	}
 
 	return pCurrent;
+}
+
+const char* WarriorNPC::warriorStateToString(WarriorState state)
+{
+	switch (state) {
+	case WARRIOR_IDLE:    return "WARRIOR_IDLE";
+	case WARRIO_MOVE_TO_GIVEN_POSITION:  return "WARRIO_MOVE_TO_GIVEN_POSITION";
+	case WARRIOR_MOVE_TO_ATTACK_POSITION:  return "WARRIOR_MOVE_TO_ATTACK_POSITION";
+	case WARRIOR_ATTACKING:  return "WARRIOR_ATTACKING";
+	case WARRIOR_MOVE_TO_COVER_POSITION:  return "WARRIOR_MOVE_TO_COVER_POSITION";
+	case WARRIOR_WAIT_FOR_SUPPLY:    return "WARRIOR_WAIT_FOR_SUPPLY";
+	case WARRIOR_IN_SUPPLY_PROCESS:  return "WARRIOR_IN_SUPPLY_PROCESS";
+	case WARRIOR_WAIT_FOR_HEALING:  return "WARRIOR_WAIT_FOR_HEALING";
+	case WARRIOR_IN_HEALING_PROCESS:  return "WARRIOR_IN_HEALING_PROCESS";
+	case WARRIOR_DEAD:  return "WARRIOR_DEAD";
+	default:return "UNKNOWN";
+	}
 }
 
 

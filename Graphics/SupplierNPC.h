@@ -49,5 +49,6 @@ public:
 private:
 	Position getWeaponsWarehousePosition();
 	void handleSupplyRequest();
+	const char* supplierStateToString(SupplierState state);
 };
 

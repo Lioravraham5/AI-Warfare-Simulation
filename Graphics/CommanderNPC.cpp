@@ -1,6 +1,7 @@
 #include "CommanderNPC.h"
 #include "glut.h"
 #include "WarriorNPC.h"
+#include <iostream>
 
 CommanderNPC::CommanderNPC(Position p, TeamID t, Map* m, MedicNPC* med, SupplierNPC* s, vector<WarriorNPC*> warriors) : BaseNPC(p, t, m), fsm(COMMANDER_IDLE)
 {
@@ -17,6 +18,11 @@ CommanderNPC::~CommanderNPC()
 
 void CommanderNPC::tick()
 {
+	std::cout << "DEBUG: CommanderNPC="
+		<<this
+		<< ", state="
+		<<commanderStateToString(this->fsm.getCurrentState()) << std::endl;
+
 	// Check if alive
 	if (!isAlive) {
 		fsm.setCurrentState(COMMANDER_DEAD);
@@ -202,6 +208,15 @@ void CommanderNPC::moveOneStepToward(NodeBFS* pSafestNode)
 	// Set next step
 	position.row = nextStepNode->getRow();
 	position.col = nextStepNode->getCol();	
+}
+
+const char* CommanderNPC::commanderStateToString(CommanderState state)
+{
+	switch (state) {
+	case COMMANDER_IDLE:    return "COMMANDER_IDLE";
+	case COMMANDER_DEAD:  return "DOWN";
+	default:return "UNKNOWN";
+	}
 }
 
 

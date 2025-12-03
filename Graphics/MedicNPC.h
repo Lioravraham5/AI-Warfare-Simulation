@@ -55,6 +55,6 @@ public:
 private:
 	Position getMedicineWarehousePosition();
 	void handleHealRequest();
-	
+	const char* medicStateToString(MedicState state);
 };
 

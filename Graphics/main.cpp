@@ -9,6 +9,14 @@
 // main.cpp:
 
 GameController* game;
+int lastUpdateTime = 0;
+const int FRAME_DELAY = 150;
+
+void onTimer(int value)
+{
+	glutPostRedisplay();     // Request to render again
+	glutTimerFunc(FRAME_DELAY, onTimer, 0); // The timing of the next frame
+}
 
 void init()
 {
@@ -23,14 +31,24 @@ void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT); // clean frame buffer
 
-	game->tick();
-	game->drawGame();
+	if(game)
+		game->drawGame();
 
 	glutSwapBuffers(); // show all
 }
 
 void idle() 
 {
+	
+	int currentTime = glutGet(GLUT_ELAPSED_TIME); // milliseconds since start
+
+	if (game && !game->isGameOver()) {
+		if (currentTime - lastUpdateTime > FRAME_DELAY) {
+			game->tick();
+			lastUpdateTime = currentTime;
+		}		
+	}
+	
 	glutPostRedisplay();
 }
 

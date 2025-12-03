@@ -71,6 +71,7 @@ private:
 	void attackBehavior();
 	NodeBFS* findSafestPosition();
 	NodeBFS* getNextStepToSafestPosition(NodeBFS* pSafestNode);
+	const char* warriorStateToString(WarriorState state);
 };
 
 

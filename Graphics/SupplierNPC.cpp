@@ -16,6 +16,11 @@ SupplierNPC::~SupplierNPC()
 
 void SupplierNPC::tick()
 {
+	std::cout << "DEBUG: SupplierNPC="
+		<< this
+		<< ", state="
+		<< supplierStateToString(this->fsm.getCurrentState()) << std::endl;
+
 	// Check if alive
 	if (!isAlive) {
 		fsm.setCurrentState(SUPPLIER_DEAD);
@@ -161,4 +166,16 @@ void SupplierNPC::handleSupplyRequest()
 		warehousePosition.col);
 
 	fsm.setCurrentState(SUPPLIER_MOVE_TO_WAREHOUSE);
+}
+
+const char* SupplierNPC::supplierStateToString(SupplierState state)
+{
+	switch (state) {
+	case SUPPLIER_IDLE:    return "SUPPLIER_IDLE";
+	case SUPPLIER_MOVE_TO_WAREHOUSE:  return "SUPPLIER_MOVE_TO_WAREHOUSE";
+	case SUPPLIER_MOVE_TO_SOLDIER:  return "SUPPLIER_MOVE_TO_SOLDIER";
+	case SUPPLIER_SUPPLYING:  return "SUPPLIER_SUPPLYING";
+	case SUPPLIER_DEAD:  return "SUPPLIER_DEAD";
+	default:return "UNKNOWN";
+	}
 }

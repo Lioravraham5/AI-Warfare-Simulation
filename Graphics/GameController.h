@@ -36,10 +36,9 @@ public:
     void initGame();
     void tick();
     void drawGame();
-
+    bool isGameOver() const;
 private:
     void registerNPC(BaseNPC* npc);
     void connectTeams();
-    bool isGameOver() const;
 };
 
