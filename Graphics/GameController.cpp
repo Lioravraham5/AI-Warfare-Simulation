@@ -78,6 +78,27 @@ void GameController::initGame()
     warrior2A->setCommander(commander2);
     warrior2B->setCommander(commander2);
 
+    // Team 1 enemies = all Team 2 NPCs
+    vector<BaseNPC*> team1Enemies = {
+        commander2, warrior2A, warrior2B, medic2, supplier2
+    };
+
+    // Team 2 enemies = all Team 1 NPCs
+    vector<BaseNPC*> team2Enemies = {
+        commander1, warrior1A, warrior1B, medic1, supplier1
+    };
+
+    // Give enemies to commanders
+    commander1->setEnemies(team1Enemies);
+    commander2->setEnemies(team2Enemies);
+
+    // Give enemies to warriors
+    warrior1A->setEnemies(team1Enemies);
+    warrior1B->setEnemies(team1Enemies);
+
+    warrior2A->setEnemies(team2Enemies);
+    warrior2B->setEnemies(team2Enemies);
+
     // Register all NPCs
     registerNPC(commander1);
     registerNPC(warrior1A);

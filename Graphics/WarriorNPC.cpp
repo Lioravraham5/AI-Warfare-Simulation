@@ -172,6 +172,12 @@ void WarriorNPC::handleOrder(Order* pOrder)
 				position.col,
 				bestPosition.row,
 				bestPosition.col);
+			if (pGoalNode) {
+				std::cout << "A*: path found" << std::endl;
+			}
+			else {
+				std::cout << "A*: NO PATH" << std::endl;
+			}
 			fsm.setCurrentState(WARRIOR_MOVE_TO_ATTACK_POSITION);
 		}
 		else {
@@ -188,6 +194,12 @@ void WarriorNPC::handleOrder(Order* pOrder)
 				position.col,
 				pSafestNode->getRow(),
 				pSafestNode->getCol());
+			if (pGoalNode) {
+				std::cout << "A*: path found" << std::endl;
+			}
+			else {
+				std::cout << "A*: NO PATH" << std::endl;
+			}
 			fsm.setCurrentState(WARRIOR_MOVE_TO_COVER_POSITION);
 		}
 		else {
@@ -264,8 +276,14 @@ bool WarriorNPC::hasLineOfSight(Map* pMap, int row1, int col1, int row2, int col
 			}
 		}
 
-		if (x == col2 && y == row2)
+		if (x == col2 && y == row2) {
+			std::cout << "DEBUG LOS: clear line from ("
+				<< row1 << "," << col1 << ") to ("
+				<< row2 << "," << col2 << ")" << std::endl;
+
 			return true; // reached target
+		}
+			
 
 		int err2 = 2 * err;
 
@@ -284,6 +302,10 @@ bool WarriorNPC::hasLineOfSight(Map* pMap, int row1, int col1, int row2, int col
 
 void WarriorNPC::updateVisibilityMap()
 {
+	std::cout << "VISIBILITY DEBUG: Warrior at ("
+		<< position.row << "," << position.col
+		<< ") updating visibility" << std::endl;
+
 	// clear visibility map
 	for (int i = 0; i < MAP_SIZE; i++)
 		for (int j = 0; j < MAP_SIZE; j++)
@@ -305,6 +327,10 @@ void WarriorNPC::updateVisibilityMap()
 			if (distance <= VIEW_RADIUS) {
 				if (hasLineOfSight(pMap, position.row, position.col, row, col)) {
 					visibilityMap[row][col] = true;
+					std::cout << "VISIBILITY: visible (" << row << "," << col << ")" << std::endl;
+				}
+				else {
+					std::cout << "VISIBILITY: blocked (" << row << "," << col << ")" << std::endl;
 				}
 			}
 		}
@@ -426,6 +452,12 @@ void WarriorNPC::attackBehavior()
 			position.col,
 			bestAttackPosition.row, 
 			bestAttackPosition.col);
+		if (pGoalNode) {
+			std::cout << "A*: path found" << std::endl;
+		}
+		else {
+			std::cout << "A*: NO PATH" << std::endl;
+		}
 		fsm.setCurrentState(WARRIOR_MOVE_TO_ATTACK_POSITION);
 		return;
 	}
@@ -467,7 +499,12 @@ void WarriorNPC::attackBehavior()
 			position.col,
 			bestAttackPosition.row,
 			bestAttackPosition.col);
-
+		if (pGoalNode) {
+			std::cout << "A*: path found" << std::endl;
+		}
+		else {
+			std::cout << "A*: NO PATH" << std::endl;
+		}
 		fsm.setCurrentState(WARRIOR_MOVE_TO_ATTACK_POSITION);
 	}
 }

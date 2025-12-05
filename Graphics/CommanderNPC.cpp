@@ -118,13 +118,39 @@ void CommanderNPC::generateCombinedVisibilityMap()
 
 bool CommanderNPC::isEnemyDetectedByWarrior() const
 {
-	for (int i = 0; i < MAP_SIZE; i++) {
-		for (int j = 0; j < MAP_SIZE; j++) {
-			if (combinedVisibilityMap[i][j])
+	for (WarriorNPC* w : warriors)
+	{
+		if (!w || !w->getIsAlive())
+			continue;
+
+		auto vis = w->getVisibilityMap();
+
+		for (BaseNPC* e : allEnemies)
+		{
+			if (!e->getIsAlive())
+				continue;
+
+
+			int r = e->getPosition().row;
+			int c = e->getPosition().col;
+
+			std::cout << "DEBUG: CHECK ENEMY: commander checking ("
+				<< e->getPosition().row << "," << e->getPosition().col
+				<< ") vis=" << vis[r][c]
+				<< std::endl;
+
+			if (vis[r][c]) {
+				std::cout << "DEBUG: "
+					<< "ENEMY DETECTED by commander" << std::endl;
 				return true;
+			}
+			else {
+				std::cout << "DEBUG: "
+					<< "NOT VISIBLE: enemy at (" << r << "," << c << ")" << std::endl;
+			}
+				
 		}
 	}
-
 	return false;
 }
 

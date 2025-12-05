@@ -28,6 +28,8 @@ private:
 	
 	NodeAStar* pGoalNode = nullptr; // store the target position found by A-Star 	
 	bool combinedVisibilityMap[MAP_SIZE][MAP_SIZE];
+	vector<BaseNPC*> allEnemies;
+
 
 public:
 	CommanderNPC(Position p, TeamID t, Map* m, MedicNPC* med, SupplierNPC* s, vector<WarriorNPC*> warriors);
@@ -36,6 +38,7 @@ public:
 	void draw() const override;
 	void requestSupply(WarriorNPC* soldier);
 	void requestHeal(WarriorNPC* soldier);
+	void setEnemies(const vector<BaseNPC*>& enemies) { allEnemies = enemies; }
 
 private:
 	void generateCombinedVisibilityMap();
