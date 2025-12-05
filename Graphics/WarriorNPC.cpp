@@ -137,6 +137,11 @@ void WarriorNPC::tick()
 
 void WarriorNPC::handleOrder(Order* pOrder)
 {
+	std::cout << "DEBUG Warrior::handleOrder currentState="
+		<< warriorStateToString(fsm.getCurrentState())
+		<< " order=" << pOrder->getType()
+		<< std::endl;
+
 	switch (pOrder->getType())
 	{
 	case MOVE_TO_POSITION: {
@@ -145,6 +150,12 @@ void WarriorNPC::handleOrder(Order* pOrder)
 			position.col,
 			pOrder->getTarget()->row,
 			pOrder->getTarget()->col);
+
+		if (!pGoalNode)
+			std::cout << "DEBUG Warrior: A* returned NULL path" << std::endl;
+		else
+			std::cout << "DEBUG Warrior: A* path found for MOVE order" << std::endl;
+
 		fsm.setCurrentState(WARRIO_MOVE_TO_GIVEN_POSITION);
 		break;
 	}
@@ -152,6 +163,8 @@ void WarriorNPC::handleOrder(Order* pOrder)
 	case ATTACK: {
 		updateVisibilityMap();
 		BaseNPC* pTargetEnemy = findBestVisibleEnemy();
+		std::cout << "DEBUG Warrior: ATTACK order, bestEnemy=" << pTargetEnemy
+			<< std::endl;
 		if (pTargetEnemy) {
 			Position bestPosition = findBestAttackPosition(pTargetEnemy);
 			pGoalNode = pAStar->findPath(
@@ -220,41 +233,53 @@ void WarriorNPC::subGrenades(int val)
 // returns true if there is clear line of sight from (row1,col1) to (row2,col2)
 bool WarriorNPC::hasLineOfSight(Map* pMap, int row1, int col1, int row2, int col2)
 {
-	int dx = abs(col2 - col1); // difference in x
-	int dy = abs(row2 - row1); // difference in y
-	int sx = (col1 < col2) ? 1 : -1; // step in x
-	int sy = (row1 < row2) ? 1 : -1; // step in y
-	int err = dx + dy; // error value
 	int x = col1;
 	int y = row1;
 
-	// Bresenham's line algorithm
-	while (true) {
-		if (!(y == row1 && x == col1)) {
-			// skip starting point
-			int cellType = pMap->getCellType(y, x);
-			if (cellType == ROCK || cellType == TREE)
-				return false; // line of sight blocked
+	int dx = abs(col2 - col1);
+	int dy = -abs(row2 - row1);
+
+	int sx = (col1 < col2) ? 1 : -1;
+	int sy = (row1 < row2) ? 1 : -1;
+
+	int err = dx + dy; // Bresenham base error
+
+	while (true)
+	{
+		// Ignore starting tile
+		if (!(x == col1 && y == row1))
+		{
+			if (x < 0 || x >= MAP_SIZE || y < 0 || y >= MAP_SIZE)
+			{
+				std::cout << "DEBUG LOS: out of bounds (" << y << "," << x << ")" << std::endl;
+				return false;
+			}
+
+			int cell = pMap->getCellType(y, x);
+			if (cell == ROCK || cell == TREE)
+			{
+				std::cout << "DEBUG LOS: blocked at (" << y << "," << x
+					<< ") cell=" << cell << std::endl;
+				return false;
+			}
 		}
 
 		if (x == col2 && y == row2)
-			break; // reached endpoint
+			return true; // reached target
 
 		int err2 = 2 * err;
-		
-		// move in y direction
-		if (err2 >= dy) {
+
+		if (err2 >= dy)
+		{
 			err += dy;
 			x += sx;
 		}
-
-		// move in x direction
-		if (err2 <= dx) {
+		if (err2 <= dx)
+		{
 			err += dx;
 			y += sy;
 		}
 	}
-	return true; // clear line of sight
 }
 
 void WarriorNPC::updateVisibilityMap()
@@ -300,12 +325,28 @@ BaseNPC* WarriorNPC::findBestVisibleEnemy()
 		int enemyRow = pEnemy->getPosition().row;
 		int enemyCol = pEnemy->getPosition().col;
 
+		std::cout << "DEBUG FVE: checking enemy at ("
+			<< enemyRow << "," << enemyCol
+			<< ") visible=" << visibilityMap[enemyRow][enemyCol]
+			<< " alive=" << pEnemy->getIsAlive()
+			<< std::endl;
+
 		// skip if enemy position not visible
-		if (!visibilityMap[enemyRow][enemyCol])
-			continue; 
+		if (!visibilityMap[enemyRow][enemyCol]) {
+			std::cout << "DEBUG FVE: enemy at ("
+				<< enemyRow << "," << enemyCol
+				<< ") NOT visible in visibilityMap" << std::endl;
+			continue;
+		}
+			
 
 		// compute distance to enemy
 		double distance = calculateDistanceToEnemy(pEnemy);
+
+		std::cout << "DEBUG FVE: distance to enemy ("
+			<< enemyRow << "," << enemyCol
+			<< ") = " << distance << std::endl;
+
 		if (distance < closestDistance) {
 			closestDistance = distance;
 			pClosestEnemy = pEnemy;

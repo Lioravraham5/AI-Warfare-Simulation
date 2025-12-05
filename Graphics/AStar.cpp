@@ -1,5 +1,6 @@
 #include "AStar.h"
 #include <queue>
+#include <iostream>
 
 AStar::AStar(Map* m)
 {
@@ -8,6 +9,10 @@ AStar::AStar(Map* m)
 
 NodeAStar* AStar::findPath(int startRow, int startCol, int targetRow, int targetCol)
 {
+	std::cout << "DEBUG A*: findPath from ("
+		<< startRow << "," << startCol << ") to ("
+		<< targetRow << "," << targetCol << ")" << std::endl;
+
 	priority_queue<NodeAStar*, std::vector<NodeAStar*>, CompareNodes> open;
 	bool visited[MAP_SIZE][MAP_SIZE] = { false };
 	int bestG[MAP_SIZE][MAP_SIZE];
@@ -15,7 +20,7 @@ NodeAStar* AStar::findPath(int startRow, int startCol, int targetRow, int target
 	initBestG(bestG); // Initialize bestG with infinity (INT_MAX)
 
 	// Start Node:
-	int h = getManhattanDistance(startRow, targetRow, startCol, targetCol);
+	int h = getManhattanDistance(startRow, startCol, targetRow, targetCol);
 	NodeAStar* pStart = new NodeAStar(startRow, startCol, 0, h, nullptr);
 	open.push(pStart);
 	bestG[startRow][startCol] = 0;
@@ -54,7 +59,7 @@ NodeAStar* AStar::findPath(int startRow, int startCol, int targetRow, int target
 				continue; // Skip non-passable cells
 
 			int newG = pCurrent->getG() + pMap->getSecurityValue(neighborRow,neighborCol) + 1; 
-			int h = getManhattanDistance(neighborRow, targetRow, neighborCol, targetCol);
+			int h = getManhattanDistance(neighborRow, neighborCol, targetRow, targetCol);
 
 			if (newG < bestG[neighborRow][neighborCol]) {
 				bestG[neighborRow][neighborCol] = newG;
@@ -63,6 +68,9 @@ NodeAStar* AStar::findPath(int startRow, int startCol, int targetRow, int target
 			}
 		}
 	}
+	std::cout << "DEBUG A*: findPath, pGoalNode="
+		<<pGoalNode
+		<< std::endl;
 	return pGoalNode; // May be nullptr if no path found
 }
 
@@ -76,6 +84,9 @@ NodeAStar* AStar::getNextStepTowardsTarget(NodeAStar* pGoalNode, int startRow, i
 		NodeAStar* pParent = pCurrent->getParent();
 		if(pParent->getRow() == startRow && pParent->getCol() == startCol)
 			return pCurrent; // pCurrent is the next step towards the target
+
+		// Move one step backwards along the path
+		pCurrent = pParent;
 	}
 	return nullptr; // Should not reach here if path is valid
 }

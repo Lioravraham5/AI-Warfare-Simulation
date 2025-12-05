@@ -42,6 +42,8 @@ void CommanderNPC::tick()
 	// Detect if any enemy is seen by any warrior
 	bool isEnemyDetected = isEnemyDetectedByWarrior();
 
+	std::cout << "DEBUG Commander: enemyDetected=" << isEnemyDetected << std::endl;
+	
 	if (isEnemyDetected) {
 
 		// Set ATTACK mode:
@@ -52,6 +54,9 @@ void CommanderNPC::tick()
 
 			Order* attackOrder = new Order(ATTACK, nullptr);
 			warrior->handleOrder(attackOrder);
+			std::cout << "DEBUG Commander: sending ATTACK order to warrior " << warrior
+				<< std::endl;
+
 		}
 	}
 	else {
@@ -64,6 +69,8 @@ void CommanderNPC::tick()
 
 			Order* defendOrder = new Order(DEFEND, nullptr);
 			warrior->handleOrder(defendOrder);
+			std::cout << "DEBUG Commander: sending DEFEND order to warrior " << warrior
+				<< std::endl;
 		}
 	}
 

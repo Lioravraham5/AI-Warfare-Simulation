@@ -15,7 +15,7 @@ public:
 	int getRow() { return row; }
 	int getCol() { return col; }
 	void setRow(int val) { row = val; }
-	void setCol(int val) {}
+	void setCol(int val) { col = val; }
 	int getF() { return f; }
 	int getH() { return h; }
 	int getG() { return g; }
