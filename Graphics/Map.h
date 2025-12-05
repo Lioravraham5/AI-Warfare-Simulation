@@ -18,9 +18,9 @@ enum CellType
 
 const int MAP_SIZE = 100;
 
-const int NUM_ROCK_CLUSTERS = 15;   
-const int NUM_TREE_CLUSTERS = 15;  
-const int NUM_WATER_CLUSTERS = 15;    
+const int NUM_ROCK_CLUSTERS = 10;   
+const int NUM_TREE_CLUSTERS = 10;  
+const int NUM_WATER_CLUSTERS = 10;    
 
 const int MAX_ROCK_RADIUS = 4;
 const int MAX_TREE_RADIUS = 6;

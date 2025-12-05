@@ -20,38 +20,65 @@ GameController::~GameController()
 
 void GameController::initGame()
 {
+    int mid = MAP_SIZE / 2;
+
+    // Team 1 on the left side of center
+    Position t1_commanderPos = { mid - 1, mid - 10 };
+    Position t1_warriorA_Pos = { mid,     mid - 10 };
+    Position t1_warriorB_Pos = { mid + 1, mid - 10 };
+    Position t1_medicPos = { mid - 2, mid - 12 };
+    Position t1_supplierPos = { mid + 2, mid - 12 };
+
+    // Team 2 on the right side of center
+    Position t2_commanderPos = { mid - 1, mid + 10 };
+    Position t2_warriorA_Pos = { mid,     mid + 10 };
+    Position t2_warriorB_Pos = { mid + 1, mid + 10 };
+    Position t2_medicPos = { mid - 2, mid + 12 };
+    Position t2_supplierPos = { mid + 2, mid + 12 };
+
     // Team 1
+    medic1 = new MedicNPC(t1_medicPos, TEAM_1, pMap);
+    supplier1 = new SupplierNPC(t1_supplierPos, TEAM_1, pMap);
 
-    medic1 = new MedicNPC({ 3,3 }, TEAM_1, pMap);
-    supplier1 = new SupplierNPC({ 3,1 }, TEAM_1, pMap);
-
-    warrior1A = new WarriorNPC({ 4,2 }, TEAM_1, pMap, nullptr, bulletsManager);
-    warrior1B = new WarriorNPC({ 5,4 }, TEAM_1, pMap, nullptr, bulletsManager);
+    warrior1A = new WarriorNPC(t1_warriorA_Pos, TEAM_1, pMap, nullptr, bulletsManager);
+    warrior1B = new WarriorNPC(t1_warriorB_Pos, TEAM_1, pMap, nullptr, bulletsManager);
 
     vector<WarriorNPC*> team1Warriors = { warrior1A, warrior1B };
 
-    commander1 = new CommanderNPC({ 2,2 }, TEAM_1, pMap, medic1, supplier1, team1Warriors);
+    commander1 = new CommanderNPC(
+        t1_commanderPos,
+        TEAM_1,
+        pMap,
+        medic1,
+        supplier1,
+        team1Warriors
+    );
 
     warrior1A->setCommander(commander1);
     warrior1B->setCommander(commander1);
 
     // Team 2
-    medic2 = new MedicNPC({ MAP_SIZE - 4, MAP_SIZE - 2 }, TEAM_2, pMap);
-    supplier2 = new SupplierNPC({ MAP_SIZE - 4, MAP_SIZE - 5 }, TEAM_2, pMap);
+    medic2 = new MedicNPC(t2_medicPos, TEAM_2, pMap);
+    supplier2 = new SupplierNPC(t2_supplierPos, TEAM_2, pMap);
 
-    warrior2A = new WarriorNPC({ MAP_SIZE - 5, MAP_SIZE - 4 }, TEAM_2, pMap, nullptr, bulletsManager);
-    warrior2B = new WarriorNPC({ MAP_SIZE - 6, MAP_SIZE - 3 }, TEAM_2, pMap, nullptr, bulletsManager);
+    warrior2A = new WarriorNPC(t2_warriorA_Pos, TEAM_2, pMap, nullptr, bulletsManager);
+    warrior2B = new WarriorNPC(t2_warriorB_Pos, TEAM_2, pMap, nullptr, bulletsManager);
 
     vector<WarriorNPC*> team2Warriors = { warrior2A, warrior2B };
 
-    commander2 = new CommanderNPC({ MAP_SIZE - 3, MAP_SIZE - 3 },
-        TEAM_2, pMap,
-        medic2, supplier2,
-        team2Warriors);
+    commander2 = new CommanderNPC(
+        t2_commanderPos,
+        TEAM_2,
+        pMap,
+        medic2,
+        supplier2,
+        team2Warriors
+    );
 
     warrior2A->setCommander(commander2);
     warrior2B->setCommander(commander2);
 
+    // Register all NPCs
     registerNPC(commander1);
     registerNPC(warrior1A);
     registerNPC(warrior1B);
